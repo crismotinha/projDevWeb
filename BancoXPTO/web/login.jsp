@@ -49,7 +49,7 @@
                 System.out.println("ja existe esse user");
                  %>
                     <div class="alert alert-danger" role="alert">
-                      Esse email já está cadastrado. Faça login
+                      Esse email já está cadastrado. Faça login!
                     </div> <%
             } else {
             
@@ -82,6 +82,27 @@
           </div> <%
         };
     }
+
+    if (login != null) { // o cara clicou em login
+        PreparedStatement pst = conn.prepareStatement("Select email, senha from Usuario where email=? and senha=?");
+        pst.setString(1, user);
+        pst.setString(2, password);
+        ResultSet rs = pst.executeQuery();                        
+        if(rs.next()) {
+           HttpSession sessao = request.getSession(true);
+           session.setAttribute("email", user);
+           session.setAttribute("senha", password);
+           response.sendRedirect("home.jsp");
+        }
+        else {
+            System.out.println("user nao existe");
+            %>
+            <div class="alert alert-danger" role="alert">
+                Esse usuário não existe. Crie uma conta!
+            </div>
+        <%
+        }
+  }
 %>
 </form>
 
