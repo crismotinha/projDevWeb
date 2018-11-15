@@ -110,3 +110,15 @@ body {
   overflow: auto;
   height: 80%;
 }
+
+#logout {
+  background: transparent;
+  border: none;
+  font-weight: 500;
+  color: #ededed;
+  cursor: pointer;
+}
+
+#logout:hover {
+    text-decoration: underline;
+}
