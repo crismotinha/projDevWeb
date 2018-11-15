@@ -32,12 +32,13 @@
     String login = request.getParameter("login"); //se o cara clicou em login, novaConta vai ser null e login não
     String user = request.getParameter("inputEmail");
     String password = request.getParameter("inputPassword");
-    Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
-                    "adm", "123456");
     
     //criar nova conta
     if (novaConta != null) {
         try {
+            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
+                    "adm", "123456");
+    
             PreparedStatement userJaExiste = conn.prepareStatement("select id from Usuario where email = '"+user+"'");
             ResultSet userJaExisteResult = userJaExiste.executeQuery();
             String userIdExistente = "";
@@ -66,6 +67,7 @@
             Statement statementConta = conn.createStatement();
             statementConta.executeUpdate("insert into Conta (agencia, numero_conta, id_usuario) values ('0001', '"+conta+"', "+userId+")");
             System.out.println("Conta Criada");
+            conn.close();
            %>
            <div class="alert alert-success" role="alert">
             Conta criada com sucesso! Faça login agora :)
