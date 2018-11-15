@@ -100,7 +100,7 @@ body {
 }
 
 .card {
-  height: 80vh;
+  height: 60vh;
 }
 .card-body {
   overflow: auto;
