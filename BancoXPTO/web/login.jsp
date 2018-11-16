@@ -32,12 +32,13 @@
     String login = request.getParameter("login"); //se o cara clicou em login, novaConta vai ser null e login não
     String user = request.getParameter("inputEmail");
     String password = request.getParameter("inputPassword");
-    Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
-                    "adm", "123456");
     
     //criar nova conta
     if (novaConta != null) {
         try {
+            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
+                    "adm", "123456");
+    
             PreparedStatement userJaExiste = conn.prepareStatement("select id from Usuario where email = '"+user+"'");
             ResultSet userJaExisteResult = userJaExiste.executeQuery();
             String userIdExistente = "";
@@ -48,7 +49,7 @@
                 System.out.println("ja existe esse user");
                  %>
                     <div class="alert alert-danger" role="alert">
-                      Esse email já está cadastrado. Faça login
+                      Esse email já está cadastrado. Faça login!
                     </div> <%
             } else {
             
@@ -66,6 +67,7 @@
             Statement statementConta = conn.createStatement();
             statementConta.executeUpdate("insert into Conta (agencia, numero_conta, id_usuario) values ('0001', '"+conta+"', "+userId+")");
             System.out.println("Conta Criada");
+            conn.close();
            %>
            <div class="alert alert-success" role="alert">
             Conta criada com sucesso! Faça login agora :)
@@ -80,6 +82,27 @@
           </div> <%
         };
     }
+
+    if (login != null) { // o cara clicou em login
+        PreparedStatement pst = conn.prepareStatement("Select email, senha from Usuario where email=? and senha=?");
+        pst.setString(1, user);
+        pst.setString(2, password);
+        ResultSet rs = pst.executeQuery();                        
+        if(rs.next()) {
+           HttpSession sessao = request.getSession(true);
+           session.setAttribute("email", user);
+           session.setAttribute("senha", password);
+           response.sendRedirect("home.jsp");
+        }
+        else {
+            System.out.println("user nao existe");
+            %>
+            <div class="alert alert-danger" role="alert">
+                Esse usuário não existe. Crie uma conta!
+            </div>
+        <%
+        }
+  }
 %>
 </form>
 

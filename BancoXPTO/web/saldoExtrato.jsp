@@ -75,7 +75,7 @@
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title">Saldo</h5>
-                  <p class="card-text">R$90,00</p>
+                  <p class="card-text">user.saldo</p>
                 </div>
               </div>
               <div class="card">
@@ -92,37 +92,24 @@
                       </thead>
                       <tbody>
                         <% 
-                            //float saldo = user.saldo;
+                            int userId = 1; // mudar com o session
                             try {
                                 Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
                                         "adm", "123456");
                                 PreparedStatement sql = conn.prepareStatement(
-                                        "SELECT t.descricao AS Descricao t.valor AS Valor"
+                                        "SELECT t.descricao AS Descricao, t.valor AS Valor"
                                       + "   FROM conta AS c INNER JOIN transacao as t ON c.id = t.id_conta"
-                                      + "   WHERE c.id_usuario = " + "user.id"
+                                      + "   WHERE c.id_usuario = " + userId
                                 );
-                                ResultSet resultado = sql.executeQuery();
-                                while(resultado.next()){
-                                    if(Integer.parseInt(resultado.getString("qtd_Estoque"))==0){
-                                        %><tr style="color:red; font-weight: bold;">
-                                            <td><%=resultado.getString("id_produto")%></td>
-                                            <td><%=resultado.getString("nome")%></td>
-                                            <td>R$<%=resultado.getString("preco")%></td>
-                                            <td><%=resultado.getString("qtd_Estoque")%></td>
-                                            <td><%=resultado.getString("percentual_desconto")%></td>
-                                            <td></td>
-                                        </tr>
-                                       <%
-                                    } else {
-                                        %><tr>
-                                            <td><%=resultado.getString("id_produto")%></td>
-                                            <td><%=resultado.getString("nome")%></td>
-                                            <td>R$<%=resultado.getString("preco")%></td>
-                                            <td><%=resultado.getString("qtd_Estoque")%></td>
-                                            <td><%=resultado.getString("percentual_desconto")%></td>
-                                            <td><button>Publicar no site</button></td>
-                                        </tr>
-                                    <%}
+                                ResultSet transacoes = sql.executeQuery();
+                                while(transacoes.next()){
+                                %>
+                                    <tr>
+                                        <td>"Data"</td>
+                                        <td><%=transacoes.getString("Descricao")%></td>
+                                        <td><%=transacoes.getString("Valor")%></td>
+                                    </tr>
+                                <%
                                 }
                                 sql.close();
                                 conn.close();
