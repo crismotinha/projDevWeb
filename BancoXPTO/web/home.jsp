@@ -48,6 +48,12 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
+                  <span data-feather="activity"></span>
+                  Saldo e Extrato
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
                   <span data-feather="file"></span>
                   Novo saque
                 </a>
