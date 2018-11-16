@@ -84,6 +84,8 @@
     }
 
     if (login != null) { // o cara clicou em login
+        Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
+                    "adm", "123456");
         PreparedStatement pst = conn.prepareStatement("Select email, senha from Usuario where email=? and senha=?");
         pst.setString(1, user);
         pst.setString(2, password);
