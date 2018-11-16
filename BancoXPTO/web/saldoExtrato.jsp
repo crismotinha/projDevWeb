@@ -93,6 +93,7 @@
                       <tbody>
                         <% 
                             int userId = 1; // mudar com o session
+                            
                             try {
                                 Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
                                         "adm", "123456");
