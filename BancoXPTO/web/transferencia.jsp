@@ -32,7 +32,7 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link" href="#">
                   <span data-feather="home"></span>
                   Home <span class="sr-only">(current)</span>
                 </a>
@@ -56,7 +56,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link active" href="#">
                   <span data-feather="refresh-cw"></span>
                   Nova transferência
                 </a>
@@ -97,42 +97,43 @@
           </form>
           <br>
           <%
-                //Se não encontrar a conta ou a agencia de destino
-                String contaIncorreta = "<div class=\"alert alert-danger\" role=\"alert\">Agência/Conta de destino não encontrada</div>";
-                //Quando der certo mostrar
-                String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Tansferência realizada com sucesso!</div>";
-                //Quando der errado mostrar:
-                String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realizar sua transferência.</div>";
-                String contaDestino = request.getParameter("contaDeDestino");
-                String valorTransferencia = request.getParameter("valor");
-                if( contaDestino != null){
-                    try{
-                        Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
-                        "adm", "123456");
-                        PreparedStatement localizaConta = conn.prepareStatement("select email, saldo from Usuario where email = '" + session.getAttribute("email") + "'");
-                        ResultSet resultado = localizaConta.executeQuery();
-                        resultado.next();
-                        String conta = resultado.getString("email");
-                        Double saldo = resultado.getDouble("saldo");
-                        out.println("<script>alert(" + contaDestino + ")</script>");
-                        try{
-                            conn.close();
-                        }catch(Exception e){}
-                        if (conta != null){
-                           try{
-                           conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-                           //out.println("<script>alert(" + contaDestino + ")</script>");
-                           PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo +" + valorTransferencia + "where email = " + contaDestino);
-                           transferencia.executeUpdate();
-                           conn.commit();
-                           }
-                           catch(Exception e){}
-
-                        }
+            //Se não encontrar a conta ou a agencia de destino
+            String contaIncorreta = "<div class=\"alert alert-danger\" role=\"alert\">Agência/Conta de destino não encontrada</div>";
+            //Quando der certo mostrar
+            String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Tansferência realizada com sucesso!</div>";
+            //Quando der errado mostrar:
+            String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realizar sua transferência.</div>";
+            String contaDestino = new String(request.getParameter("contaDeDestino"));
+            String valorTransferencia = request.getParameter("valor");
+            if( contaDestino != null){
+                //out.println("<script> alert(\"" + contaDestino + ", " + valorTransferencia + "\")</script>");
+                try{
+                    Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
+                    PreparedStatement localizaConta = conn.prepareStatement("select email, saldo from Usuario where email = '" + session.getAttribute("email") + "'");
+                    ResultSet resultado = localizaConta.executeQuery();
+                    resultado.next();
+                    String conta = resultado.getString("email");
+                    Double saldo = resultado.getDouble("saldo");
+                    //out.println("<script>console.log(\"" + contaDestino + "\")</script>");
+                    PreparedStatement contaDestinoExiste = conn.prepareStatement("select email from Usuario where email = '" + contaDestino + "'" );
+                    resultado = contaDestinoExiste.executeQuery();
+                    resultado.next();
+                    String sqlContaDestino = resultado.getString("email");
+                    if ((sqlContaDestino != null) && (conta != null)){
+                        //out.println("<script>console.log(\" Entereing a foreign territory\")</script>");
+                        //out.println("<script>alert(" + contaDestino + ")</script>");
+                        PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo +" + valorTransferencia + "where email = '" + contaDestino + "'");
+                        PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo -" + valorTransferencia + "where email = '" + session.getAttribute("email") + "'");
+                        transferencia.executeUpdate();
+                        retiradaOrigem.executeUpdate();
+                        conn.commit();
+                        out.println(resultadoPositivo);
+                    }else if (sqlContaDestino == null){
+                        out.println("<script>console.log(\" Entereing a foreign territory\")</script>");
+                        out.println(contaIncorreta);
                     }
-                    catch(Exception e){
-
-                    }
+                }
+                catch(Exception e){}
                 }
           %>
           
