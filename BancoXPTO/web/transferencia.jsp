@@ -73,11 +73,11 @@
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="agOrigem">Agência de Origem</label>
-                  <input type="number" class="form-control" id="agOrigem" placeholder="preencherAquiUsandoJava" value="preencherAquiUsandoJava" readonly>
+                  <input type="number" class="form-control" id="agOrigem" placeholder="<% out.println(session.getAttribute("agencia")); %>" value="preencherAquiUsandoJava" readonly>
                 </div>
                 <div class="form-group col-md-6">
                   <label for="ctOrigem">Conta de Origem</label>
-                  <input type="number" class="form-control" id="ctOrigem" placeholder="<% out.print(session.getAttribute("email")); %>" value="<% session.getAttribute("email"); %>" readonly>
+                  <input type="number" class="form-control" id="ctOrigem" placeholder="<% out.println(session.getAttribute("conta")); %>" value="<% session.getAttribute("conta"); %>" readonly>
                 </div>
               </div>
               <div class="form-row">
@@ -87,11 +87,11 @@
                 </div>
                 <div class="form-group col-md-6">
                   <label for="ctDestino">Conta de Destino</label>
-                  <input type="text" class="form-control" id="ctDestino" placeholder="Conta" name="contaDeDestino"><!--Ver número da conta-->
+                  <input type="number" class="form-control" id="ctDestino" placeholder="Conta" name="contaDeDestino" required><!--Ver número da conta-->
                 </div>
               </div>
               <label for="valor">Valor</label>
-              <input type="number" min="1" step="any" class="form-control" name="valor" id="valor" placeholder="Valor">
+              <input type="number" min="1" step="any" class="form-control" name="valor" id="valor" placeholder="Valor" required>
             </div>
             <button type="submit" class="btn btn-primary" >Realizar Transferência</button>
           </form>
@@ -103,38 +103,45 @@
             String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Tansferência realizada com sucesso!</div>";
             //Quando der errado mostrar:
             String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realizar sua transferência.</div>";
-            String contaDestino = new String(request.getParameter("contaDeDestino"));
+            String contaDestino = request.getParameter("contaDeDestino");
             String valorTransferencia = request.getParameter("valor");
             if( contaDestino != null){
                 //out.println("<script> alert(\"" + contaDestino + ", " + valorTransferencia + "\")</script>");
                 try{
                     Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-                    PreparedStatement localizaConta = conn.prepareStatement("select email, saldo from Usuario where email = '" + session.getAttribute("email") + "'");
+                    PreparedStatement localizaConta = conn.prepareStatement("select * from Usuario where id = " + session.getAttribute("conta"));
                     ResultSet resultado = localizaConta.executeQuery();
                     resultado.next();
-                    String conta = resultado.getString("email");
+                    String conta = resultado.getString("id");
                     Double saldo = resultado.getDouble("saldo");
-                    //out.println("<script>console.log(\"" + contaDestino + "\")</script>");
-                    PreparedStatement contaDestinoExiste = conn.prepareStatement("select email from Usuario where email = '" + contaDestino + "'" );
+                    PreparedStatement contaDestinoExiste = conn.prepareStatement("select * from Usuario where id = " + contaDestino);
                     resultado = contaDestinoExiste.executeQuery();
                     resultado.next();
                     String sqlContaDestino = resultado.getString("email");
-                    if ((sqlContaDestino != null) && (conta != null)){
-                        //out.println("<script>console.log(\" Entereing a foreign territory\")</script>");
+                    
+                    if ((contaDestino != null) && (conta != null)){
+                        //out.println("<script>console.log(\"" + conta + " " + sqlContaDestino + "\")</script>");
                         //out.println("<script>alert(" + contaDestino + ")</script>");
-                        PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo +" + valorTransferencia + "where email = '" + contaDestino + "'");
-                        PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo -" + valorTransferencia + "where email = '" + session.getAttribute("email") + "'");
+                        PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo +" + valorTransferencia + "where id = " + contaDestino);
+                        PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo -" + valorTransferencia + "where id = " + session.getAttribute("conta"));
+                        PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values (" + valorTransferencia + ", 'TEC - Banco XPTO - Agência: 0001 - Conta: 00000" + contaDestino + "', " + contaDestino + ")");
+                        PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values (-" + valorTransferencia + ", 'TEC - Banco XPTO - Agência: 0001 - Conta: 00000" + conta + "', " + conta + ")");
+                        regTransacaoDest.executeUpdate();
+                        regTransacaoOrg.executeUpdate();
                         transferencia.executeUpdate();
                         retiradaOrigem.executeUpdate();
                         conn.commit();
                         out.println(resultadoPositivo);
-                    }else if (sqlContaDestino == null){
-                        out.println("<script>console.log(\" Entereing a foreign territory\")</script>");
+                    } else {
                         out.println(contaIncorreta);
                     }
+                    conn.close();
                 }
-                catch(Exception e){}
+                catch(Exception e){
+                    out.println(resultadoNegativo);
+                    out.println("<script>console.log(\"" + e.toString() + "\")</script>");
                 }
+            }
           %>
           
           
