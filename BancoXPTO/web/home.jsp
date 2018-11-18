@@ -47,19 +47,19 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="./novoSaque.jsp">
                   <span data-feather="file"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="./novaTransferencia.jsp">
                   <span data-feather="shopping-cart"></span>
                   Nova transferência
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="./novoDeposito.jsp">
                   <span data-feather="users"></span>
                   Novo depósito
                 </a>
@@ -93,7 +93,7 @@
               <div class="carousel-item w-100 h-100">
                 <img class="d-block w-100 h-100" src="https://www.telefonescelulares.com.br/wp-content/uploads/2016/10/transferencia.jpg" alt="Transferência">
                 <div class="carousel-caption d-none d-md-block">
-                  <h5>Trasferências</h5>
+                  <h5>Transferências</h5>
                 </div>
               </div>
             </div>
