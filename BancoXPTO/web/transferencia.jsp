@@ -102,9 +102,9 @@
             String agenciaDestino = request.getParameter("agenciaDestino");
             String contaDestino = request.getParameter("contaDeDestino");
             String valorTransferencia = request.getParameter("valor");
-	    
+	    int idContaOrigem = idConta(numeroAgencia(session.getAttribute("email").toString()), numeroConta(session.getAttribute("email").toString()));
             if( (contaDestino != null && agenciaDestino != null) && valorTransferencia != null){
-                out.println(transferencia(session.getAttribute("email").toString(), agenciaDestino, contaDestino, valorTransferencia));
+                out.println(transferencia(session.getAttribute("email").toString(), agenciaDestino, contaDestino, valorTransferencia, idContaOrigem));
 	    }
           %>
           
@@ -130,7 +130,7 @@
 
 <%!
     
-    public String transferencia(String emailOrigem, String agenciaDestino, String contaDestino, String vaalor){
+    public String transferencia(String emailOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
         String contaIncorreta = "<div class=\"alert alert-danger\" role=\"alert\">Agência/Conta de destino não encontrada</div>";
         String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Tansferência realizada com sucesso!</div>";
         String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realizar sua transferência.</div>";
@@ -145,15 +145,9 @@
 		PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where email = ?");
 		retiradaOrigem.setDouble(1, valor);
 		retiradaOrigem.setString(2, emailOrigem);
-		PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TEC - Banco XPTO - Agência: '" + agenciaDestino + "' - Conta: '" + contaDestino + "'," + idDestino + ")");
-		//regTransacaoOrg.setDouble(1, valor);
-		//regTransacaoOrg.setString(2, agenciaDestino);
-		//regTransacaoOrg.setString(3, contaDestino);
-		//regTransacaoOrg.setInt(4, idDestino);
-		//PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( ?, 'TEC - Banco XPTO - Responsável Origem: ?)");
-		//regTransacaoDest.setDouble(1, valor);
-		//regTransacaoDest.setString(2, emailOrigem);
-		//regTransacaoDest.executeUpdate();
+		PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TEC - Banco XPTO - Agência: " + agenciaDestino + " - Conta: " + contaDestino + "'," + idConta(agenciaDestino, contaDestino) + ")");
+		PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TEC - Banco XPTO - Agência: " + agenciaDestino + " - Conta: " + contaDestino + "', " + idContaOrigem + ")");
+		regTransacaoDest.executeUpdate();
 		regTransacaoOrg.executeUpdate();
 		transferencia.executeUpdate();
 		retiradaOrigem.executeUpdate();
@@ -180,6 +174,25 @@
 	    ResultSet result = localizaUsuario.executeQuery();
 	    result.next();
 	    contaEncontrada = result.getInt("id_usuario");
+	    conn.close();
+	}
+	catch(Exception e){
+	    contaEncontrada = -1;
+	    return contaEncontrada;
+	}
+	return contaEncontrada;
+    }
+
+    int idConta(String agencia, String conta){
+	int contaEncontrada = 0;
+	try{
+	    Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
+	    PreparedStatement localizaUsuario = conn.prepareStatement("SELECT * FROM Conta WHERE agencia = ? AND numero_conta = ?");
+            localizaUsuario.setString(1, agencia);
+	    localizaUsuario.setString(2, conta);
+	    ResultSet result = localizaUsuario.executeQuery();
+	    result.next();
+	    contaEncontrada = result.getInt("id");
 	    conn.close();
 	}
 	catch(Exception e){
@@ -227,7 +240,7 @@
             return e.toString();
         }
         return conta;
-    }
+    } 
 
     public String numeroAgencia(String email){
         String agencia;
