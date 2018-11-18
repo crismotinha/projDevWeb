@@ -46,25 +46,25 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" href="./home.jsp">
                   <span data-feather="home"></span>
                   Home <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./novoSaque.jsp">
+                <a class="nav-link" href="#">
                   <span data-feather="file"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./novaTransferencia.jsp">
+                <a class="nav-link" href="#">
                   <span data-feather="shopping-cart"></span>
                   Nova transferência
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./novoDeposito.jsp">
+                <a class="nav-link" href="#">
                   <span data-feather="users"></span>
                   Novo depósito
                 </a>
