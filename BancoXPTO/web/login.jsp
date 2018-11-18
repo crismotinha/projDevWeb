@@ -125,7 +125,7 @@
             System.out.println("Erro" + e.toString());
             %>
           <div class="alert alert-danger" role="alert">
-            Algum erro ocorreu ao criar sua conta, tente novamente.
+            Algum erro ocorreu ao fazer login, tente novamente.
           </div> <%
         } // fecha catch
     } // fecha if login != null
