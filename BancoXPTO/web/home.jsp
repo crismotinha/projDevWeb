@@ -5,6 +5,11 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<% Object user = session.getAttribute("id"); 
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+    }
+    else { %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -124,3 +129,4 @@
     </script>
   </body>
 </html>
+<%}%>
