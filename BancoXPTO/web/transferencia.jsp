@@ -3,6 +3,8 @@
     Created on : 16/11/2018, 14:51:40
     Author     : Thales
 --%>
+
+
 <%@page import="java.sql.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
@@ -32,7 +34,7 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="home.jsp">
                   <span data-feather="home"></span>
                   Home <span class="sr-only">(current)</span>
                 </a>
@@ -73,17 +75,17 @@
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="agOrigem">Agência de Origem</label>
-                  <input type="number" class="form-control" id="agOrigem" placeholder="<% out.println(session.getAttribute("agencia")); %>" value="preencherAquiUsandoJava" readonly>
+                  <input type="number" class="form-control" id="agOrigem" placeholder="<%= numeroAgencia(session.getAttribute("email").toString()) %>" value="<%= numeroAgencia(session.getAttribute("email").toString()) %>" readonly>
                 </div>
                 <div class="form-group col-md-6">
                   <label for="ctOrigem">Conta de Origem</label>
-                  <input type="number" class="form-control" id="ctOrigem" placeholder="<% out.println(session.getAttribute("conta")); %>" value="<% session.getAttribute("conta"); %>" readonly>
+                  <input type="number" class="form-control" id="ctOrigem" placeholder="<%= numeroConta(session.getAttribute("email").toString()) %>" value="<%= numeroConta(session.getAttribute("email").toString()) %>" readonly>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="agDestino">Agência de Destino</label>
-                  <input type="number" class="form-control" id="agDestino" placeholder="0001" readonly>
+                  <input type="number" class="form-control" id="agDestino" placeholder="Agência" name="agenciaDestino">
                 </div>
                 <div class="form-group col-md-6">
                   <label for="ctDestino">Conta de Destino</label>
@@ -97,51 +99,13 @@
           </form>
           <br>
           <%
-            //Se não encontrar a conta ou a agencia de destino
-            String contaIncorreta = "<div class=\"alert alert-danger\" role=\"alert\">Agência/Conta de destino não encontrada</div>";
-            //Quando der certo mostrar
-            String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Tansferência realizada com sucesso!</div>";
-            //Quando der errado mostrar:
-            String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realizar sua transferência.</div>";
+            String agenciaDestino = request.getParameter("agenciaDestino");
             String contaDestino = request.getParameter("contaDeDestino");
             String valorTransferencia = request.getParameter("valor");
-            if( contaDestino != null){
-                //out.println("<script> alert(\"" + contaDestino + ", " + valorTransferencia + "\")</script>");
-                try{
-                    Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-                    PreparedStatement localizaConta = conn.prepareStatement("select * from Usuario where id = " + session.getAttribute("conta"));
-                    ResultSet resultado = localizaConta.executeQuery();
-                    resultado.next();
-                    String conta = resultado.getString("id");
-                    Double saldo = resultado.getDouble("saldo");
-                    PreparedStatement contaDestinoExiste = conn.prepareStatement("select * from Usuario where id = " + contaDestino);
-                    resultado = contaDestinoExiste.executeQuery();
-                    resultado.next();
-                    String sqlContaDestino = resultado.getString("email");
-                    
-                    if ((contaDestino != null) && (conta != null)){
-                        //out.println("<script>console.log(\"" + conta + " " + sqlContaDestino + "\")</script>");
-                        //out.println("<script>alert(" + contaDestino + ")</script>");
-                        PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo +" + valorTransferencia + "where id = " + contaDestino);
-                        PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo -" + valorTransferencia + "where id = " + session.getAttribute("conta"));
-                        PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values (" + valorTransferencia + ", 'TEC - Banco XPTO - Agência: 0001 - Conta: 00000" + contaDestino + "', " + contaDestino + ")");
-                        PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values (-" + valorTransferencia + ", 'TEC - Banco XPTO - Agência: 0001 - Conta: 00000" + conta + "', " + conta + ")");
-                        regTransacaoDest.executeUpdate();
-                        regTransacaoOrg.executeUpdate();
-                        transferencia.executeUpdate();
-                        retiradaOrigem.executeUpdate();
-                        conn.commit();
-                        out.println(resultadoPositivo);
-                    } else {
-                        out.println(contaIncorreta);
-                    }
-                    conn.close();
-                }
-                catch(Exception e){
-                    out.println(resultadoNegativo);
-                    out.println("<script>console.log(\"" + e.toString() + "\")</script>");
-                }
-            }
+	    
+            if( (contaDestino != null && agenciaDestino != null) && valorTransferencia != null){
+                out.println(transferencia(session.getAttribute("email").toString(), agenciaDestino, contaDestino, valorTransferencia));
+	    }
           %>
           
           
@@ -163,4 +127,128 @@
     </script>
   </body>
 </html>
+
+<%!
+    
+    public String transferencia(String emailOrigem, String agenciaDestino, String contaDestino, String vaalor){
+        String contaIncorreta = "<div class=\"alert alert-danger\" role=\"alert\">Agência/Conta de destino não encontrada</div>";
+        String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Tansferência realizada com sucesso!</div>";
+        String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realizar sua transferência.</div>";
+	Double valor = Double.parseDouble(vaalor);
+	int idDestino = idUsuarioConta(agenciaDestino, contaDestino);
+	if(idDestino > 0){
+	    try{
+		Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
+		PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo + ? where id = ?");
+		transferencia.setDouble(1, valor);
+		transferencia.setInt(2, idDestino);
+		PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where email = ?");
+		retiradaOrigem.setDouble(1, valor);
+		retiradaOrigem.setString(2, emailOrigem);
+		PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TEC - Banco XPTO - Agência: '" + agenciaDestino + "' - Conta: '" + contaDestino + "'," + idDestino + ")");
+		//regTransacaoOrg.setDouble(1, valor);
+		//regTransacaoOrg.setString(2, agenciaDestino);
+		//regTransacaoOrg.setString(3, contaDestino);
+		//regTransacaoOrg.setInt(4, idDestino);
+		//PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( ?, 'TEC - Banco XPTO - Responsável Origem: ?)");
+		//regTransacaoDest.setDouble(1, valor);
+		//regTransacaoDest.setString(2, emailOrigem);
+		//regTransacaoDest.executeUpdate();
+		regTransacaoOrg.executeUpdate();
+		transferencia.executeUpdate();
+		retiradaOrigem.executeUpdate();
+		conn.commit();
+		conn.close();
+	    }
+	    catch(Exception e){
+		return e.toString();
+	    }
+	    return resultadoPositivo;
+	}
+	else if (idDestino == -1) return contaIncorreta;
+	//else if (idDestino == -1) return contaIncorreta;
+	else return resultadoNegativo; 
+    }
+
+    int idUsuarioConta(String agencia, String conta){
+	int contaEncontrada = 0;
+	try{
+	    Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
+	    PreparedStatement localizaUsuario = conn.prepareStatement("SELECT * FROM Conta WHERE agencia = ? AND numero_conta = ?");
+            localizaUsuario.setString(1, agencia);
+	    localizaUsuario.setString(2, conta);
+	    ResultSet result = localizaUsuario.executeQuery();
+	    result.next();
+	    contaEncontrada = result.getInt("id_usuario");
+	    conn.close();
+	}
+	catch(Exception e){
+	    contaEncontrada = -1;
+	    return contaEncontrada;
+	}
+	return contaEncontrada;
+    }
+
+    
+
+    public Double getSaldoOrigem(String email){
+        Double saldo = 0.0;
+        try{
+            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
+            PreparedStatement localizaUsuario = conn.prepareStatement("select saldo from Usuario where email = ?");
+            localizaUsuario.setString(1, email);
+            ResultSet resultado = localizaUsuario.executeQuery();
+            resultado.next();
+            saldo = resultado.getDouble("saldo");
+            conn.close();
+        }
+        catch(Exception e){
+            return saldo;
+        }
+        return saldo;
+    }
+
+    public String numeroConta(String email){
+        String conta;
+        try{
+            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
+            PreparedStatement localizaUsuario = conn.prepareStatement("select id from Usuario where email = ?");
+            localizaUsuario.setString(1, email);
+            ResultSet resultado = localizaUsuario.executeQuery();
+            PreparedStatement localizaConta = conn.prepareStatement("select numero_conta from conta where id_usuario = ?");
+            resultado.next();
+            localizaConta.setString(1, resultado.getString("id"));
+            resultado = localizaConta.executeQuery();
+            resultado.next();
+            conta = resultado.getString("numero_conta");
+            conn.close();
+        }
+        catch(Exception e){
+            return e.toString();
+        }
+        return conta;
+    }
+
+    public String numeroAgencia(String email){
+        String agencia;
+        try{
+            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
+            PreparedStatement localizaUsuario = conn.prepareStatement("select id from Usuario where email = ?");
+            localizaUsuario.setString(1, email);
+            ResultSet resultado = localizaUsuario.executeQuery();
+            PreparedStatement localizaAgencia = conn.prepareStatement("select agencia from conta where id_usuario = ?");
+            resultado.next();
+            localizaAgencia.setString(1, resultado.getString("id"));
+            resultado = localizaAgencia.executeQuery();
+            resultado.next();
+            
+            agencia = resultado.getString("agencia");
+    conn.close();
+        }
+        catch(Exception e){
+            return e.toString();
+        }
+        return agencia;
+    }
+%>
 

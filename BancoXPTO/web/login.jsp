@@ -82,24 +82,16 @@
           </div> <%
         };
     }
-
     if (login != null) { // o cara clicou em login
-        Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
-                    "adm", "123456");
-        PreparedStatement pst = conn.prepareStatement("Select id, email, senha from Usuario where email=? and senha=?");
+        Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
+        PreparedStatement pst = conn.prepareStatement("Select email, senha from Usuario where email=? and senha=?");
         pst.setString(1, user);
         pst.setString(2, password);
-        PreparedStatement conta = conn.prepareStatement("select * from conta where id_usuario = ?");
         ResultSet rs = pst.executeQuery();                        
         if(rs.next()) {
-           conta.setString(1, rs.getString("id"));
-           ResultSet rsconta = conta.executeQuery();
-           rsconta.next();
            HttpSession sessao = request.getSession(true);
            session.setAttribute("email", user);
            session.setAttribute("senha", password);
-           session.setAttribute("agencia", rsconta.getString("agencia"));
-           session.setAttribute("conta", rsconta.getString("numero_conta"));
            response.sendRedirect("home.jsp");
         }
         else {
