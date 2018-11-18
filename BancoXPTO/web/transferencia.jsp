@@ -103,7 +103,7 @@
             String contaDestino = request.getParameter("contaDeDestino");
             String valorTransferencia = request.getParameter("valor");
 	    int idContaOrigem = idConta(numeroAgencia(session.getAttribute("email").toString()), numeroConta(session.getAttribute("email").toString()));
-            if( (contaDestino != null && agenciaDestino != null) && valorTransferencia != null){
+            if( (contaDestino != null && agenciaDestino != null) && (valorTransferencia != null)){
                 out.println(transferencia(session.getAttribute("email").toString(), agenciaDestino, contaDestino, valorTransferencia, idContaOrigem));
 	    }
           %>
@@ -136,7 +136,7 @@
         String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realizar sua transferência.</div>";
 	Double valor = Double.parseDouble(vaalor);
 	int idDestino = idUsuarioConta(agenciaDestino, contaDestino);
-	if(idDestino > 0){
+	if(idDestino > 0 && valor >= 0){
 	    try{
 		Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
 		PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo + ? where id = ?");
