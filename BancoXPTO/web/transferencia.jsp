@@ -146,7 +146,7 @@
 		retiradaOrigem.setDouble(1, valor);
 		retiradaOrigem.setString(2, emailOrigem);
 		PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TEC - Banco XPTO - Agência: " + agenciaDestino + " - Conta: " + contaDestino + "'," + idConta(agenciaDestino, contaDestino) + ")");
-		PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TEC - Banco XPTO - Agência: " + agenciaDestino + " - Conta: " + contaDestino + "', " + idContaOrigem + ")");
+		PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TEC - Banco XPTO - Responsável: " + emailOrigem + "', " + idContaOrigem + ")");
 		regTransacaoDest.executeUpdate();
 		regTransacaoOrg.executeUpdate();
 		transferencia.executeUpdate();
