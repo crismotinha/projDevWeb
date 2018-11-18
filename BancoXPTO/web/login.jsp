@@ -118,7 +118,7 @@
             <div class="alert alert-danger" role="alert">
                 Esse usuário não existe. Crie uma conta!
             </div>
-            <%
+            <% conn.close();
             }
         } // fecha try
         catch (Exception e) {
