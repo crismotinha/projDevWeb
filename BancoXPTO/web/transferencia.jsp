@@ -103,13 +103,7 @@
             String contaDestino = request.getParameter("contaDeDestino");
             String valorTransferencia = request.getParameter("valor");
 	    int idContaOrigem = idConta(numeroAgencia(session.getAttribute("email").toString()), numeroConta(session.getAttribute("email").toString()));
-	    /*if (contaDestino != null && agenciaDestino != null){
-		if(agenciaDestino.equals(numeroAgencia(session.getAttribute("email").toString()))  && contaDestino.equals(numeroConta(session.getAttribute("email").toString()))){
-		    out.println("<div class=\"alert alert-danger\" role=\"alert\">Conta de destino e origem são as mesmas. Não é possível realizar a operação.</div>");
-		}
-	    }
-	    else */if( (contaDestino != null && agenciaDestino != null) && (valorTransferencia != null)){
-		//out.println("<script>alert(\" Agência de Destino: " + contaDestino + " - Agência Origem: " + numeroConta(session.getAttribute("email").toString())+ "\")</script>");
+	    if( (contaDestino != null && agenciaDestino != null) && (valorTransferencia != null)){
                 out.println(transferencia(session.getAttribute("email").toString(), agenciaDestino, contaDestino, valorTransferencia, idContaOrigem));
 	    }
 	    
