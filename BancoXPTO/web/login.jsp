@@ -83,26 +83,51 @@
         };
     }
     if (login != null) { // o cara clicou em login
-        Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-        PreparedStatement pst = conn.prepareStatement("Select email, senha from Usuario where email=? and senha=?");
-        pst.setString(1, user);
-        pst.setString(2, password);
-        ResultSet rs = pst.executeQuery();                        
-        if(rs.next()) {
-           HttpSession sessao = request.getSession(true);
-           session.setAttribute("email", user);
-           session.setAttribute("senha", password);
-           response.sendRedirect("home.jsp");
-        }
-        else {
-            System.out.println("user nao existe");
-            %>
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
+                    "adm", "123456");
+
+            PreparedStatement userExiste = conn.prepareStatement("Select email from Usuario where email=?");
+            userExiste.setString(1, user);
+            ResultSet resultadoUserExiste = userExiste.executeQuery();                        
+            if(resultadoUserExiste.next()) {
+                PreparedStatement loginUser = conn.prepareStatement("Select id, email, senha from Usuario where email=? and senha=?");
+                loginUser.setString(1, user);
+                loginUser.setString(2, password);
+                ResultSet usuarioLogado = loginUser.executeQuery();
+                String userId = "";
+                if (usuarioLogado.next()) {    
+                    userId = usuarioLogado.getString("id");
+                    HttpSession sessao = request.getSession(true);
+                    session.setAttribute("email", user);
+                    session.setAttribute("id", userId);
+                    response.sendRedirect("home.jsp");
+                }
+                else {
+                    System.out.println("senha errada");
+                } %>
+                <div class="alert alert-danger" role="alert">
+                Senha incorreta.
+            </div>
+            <%
+            }
+            else { // else da proucura do email do user
+                System.out.println("user nao existe");
+                %>
             <div class="alert alert-danger" role="alert">
                 Esse usuário não existe. Crie uma conta!
             </div>
-        <%
-        }
-  }
+            <% conn.close();
+            }
+        } // fecha try
+        catch (Exception e) {
+            System.out.println("Erro" + e.toString());
+            %>
+          <div class="alert alert-danger" role="alert">
+            Algum erro ocorreu ao fazer login, tente novamente.
+          </div> <%
+        } // fecha catch
+    } // fecha if login != null
 %>
 </form>
 

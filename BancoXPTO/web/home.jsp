@@ -5,6 +5,11 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<% Object user = session.getAttribute("id"); 
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+    }
+    else { %>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -41,7 +46,7 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" href="./home.jsp">
                   <span data-feather="home"></span>
                   Home <span class="sr-only">(current)</span>
                 </a>
@@ -93,7 +98,7 @@
               <div class="carousel-item w-100 h-100">
                 <img class="d-block w-100 h-100" src="https://www.telefonescelulares.com.br/wp-content/uploads/2016/10/transferencia.jpg" alt="Transferência">
                 <div class="carousel-caption d-none d-md-block">
-                  <h5>Trasferências</h5>
+                  <h5>Transferências</h5>
                 </div>
               </div>
             </div>
@@ -124,3 +129,4 @@
     </script>
   </body>
 </html>
+<%}%>

@@ -6,6 +6,8 @@
 
 
 <%@page import="java.sql.*"%>
+<%@page import="java.time.LocalDate"%>
+<%@page import="java.time.Instant"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html lang="en">
@@ -75,11 +77,11 @@
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="agOrigem">Agência de Origem</label>
-                  <input type="text" class="form-control" id="agOrigem" placeholder="<%= numeroAgencia(session.getAttribute("email").toString()) %>" value="<%= numeroAgencia(session.getAttribute("email").toString()) %>" readonly>
+                  <input type="text" class="form-control" id="agOrigem" placeholder="<% out.println(numeroAgencia(Integer.parseInt(session.getAttribute("id").toString()))); %>" value="<% out.println(numeroAgencia(Integer.parseInt(session.getAttribute("id").toString()))); %>" readonly>
                 </div>
                 <div class="form-group col-md-6">
                   <label for="ctOrigem">Conta de Origem</label>
-                  <input type="text" class="form-control" id="ctOrigem" placeholder="<%= numeroConta(session.getAttribute("email").toString()) %>" value="<%= numeroConta(session.getAttribute("email").toString()) %>" readonly>
+                  <input type="text" class="form-control" id="ctOrigem" placeholder="<%out.println(numeroConta(Integer.parseInt(session.getAttribute("id").toString()))); %>" value=" <% out.println(numeroConta(Integer.parseInt(session.getAttribute("id").toString()))); %>" readonly>
                 </div>
               </div>
               <div class="form-row">
@@ -102,9 +104,9 @@
             String agenciaDestino = request.getParameter("agenciaDestino");
             String contaDestino = request.getParameter("contaDeDestino");
             String valorTransferencia = request.getParameter("valor");
-	    int idContaOrigem = idConta(numeroAgencia(session.getAttribute("email").toString()), numeroConta(session.getAttribute("email").toString()));
+	    int idContaOrigem = idConta(numeroAgencia(Integer.parseInt(session.getAttribute("id").toString())), numeroConta(Integer.parseInt(session.getAttribute("id").toString())));
 	    if( (contaDestino != null && agenciaDestino != null) && (valorTransferencia != null)){
-                out.println(transferencia(session.getAttribute("email").toString(), agenciaDestino, contaDestino, valorTransferencia, idContaOrigem));
+                out.println(transferencia(Integer.parseInt(session.getAttribute("id").toString()), agenciaDestino, contaDestino, valorTransferencia, idContaOrigem));
 	    }
 	    
           %>
@@ -131,14 +133,14 @@
 
 <%!
     
-    public String transferencia(String emailOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
+    public String transferencia(int idOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
         String contaIncorreta = "<div class=\"alert alert-danger\" role=\"alert\">Agência/Conta de destino não encontrada</div>";
         String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Operação realizada com sucesso!</div>";
         String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Saldo insuficiente.</div>";
 	String contasIguais = "<div class=\"alert alert-danger\" role=\"alert\">Conta de destino e origem são as mesmas. Não é possível realizar a operação.</div>";
 	String resultadoException = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realiar sua operações. Por favor cheque o log de registro..</div>";
-	String agenciaOrigem  = numeroAgencia(emailOrigem);
-	String contaOrigem = numeroConta(emailOrigem);
+	String agenciaOrigem  = numeroAgencia(idOrigem);
+	String contaOrigem = numeroConta(idOrigem);
 	Double valor = Double.parseDouble(vaalor);
 	int idDestino = idUsuarioConta(agenciaDestino, contaDestino);
 	if(agenciaOrigem.contentEquals(agenciaDestino) && contaOrigem.contentEquals(contaDestino)){
@@ -147,8 +149,8 @@
 	else if(idDestino > 0 && valor >= 0){
 	    try{
 		Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-		PreparedStatement selectFundos = conn.prepareStatement("select saldo from usuario where email = ?");
-		selectFundos.setString(1, emailOrigem);
+		PreparedStatement selectFundos = conn.prepareStatement("select saldo from usuario where id = ?");
+		selectFundos.setInt(1, idOrigem);
 		ResultSet rsFundos = selectFundos.executeQuery();
 		rsFundos.next();
 		Double fundos = rsFundos.getDouble("saldo");
@@ -156,11 +158,14 @@
 		    PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo + ? where id = ?");
 		    transferencia.setDouble(1, valor);
 		    transferencia.setInt(2, idDestino);
-		    PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where email = ?");
+		    PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where id = ?");
 		    retiradaOrigem.setDouble(1, valor);
-		    retiradaOrigem.setString(2, emailOrigem);
-		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + ", Conta: " + contaDestino + "'," + idConta(agenciaDestino, contaDestino) + ")");
-		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TBX de Agência: " + numeroAgencia(emailOrigem) + ", Conta: " + numeroConta(emailOrigem) + "', " + idContaOrigem + ")");
+		    retiradaOrigem.setInt(2, idOrigem);
+		    String horaData = Instant.now().toString();
+		    String data = horaData.substring(0, 9);
+		    String hora =  horaData.substring(11, 16);
+		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + " - Conta: " + contaDestino + "/ Data: " + data + " - Hora: " + hora + "'," + idConta(agenciaDestino, contaDestino) + ")");
+		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TBX de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "/ Data: " + data + " - Hora: " + hora + "', " + idContaOrigem + ")");
 		    regTransacaoDest.executeUpdate();
 		    regTransacaoOrg.executeUpdate();
 		    transferencia.executeUpdate();
@@ -220,7 +225,7 @@
 
     
 
-    public Double getSaldoOrigem(String email){
+   /* public Double getSaldoOrigem(String email){
         Double saldo = 0.0;
         try{
             Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
@@ -235,19 +240,15 @@
             return saldo;
         }
         return saldo;
-    }
+    }*/
 
-    public String numeroConta(String email){
+    public String numeroConta(int id){
         String conta;
         try{
             Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-            PreparedStatement localizaUsuario = conn.prepareStatement("select id from Usuario where email = ?");
-            localizaUsuario.setString(1, email);
-            ResultSet resultado = localizaUsuario.executeQuery();
             PreparedStatement localizaConta = conn.prepareStatement("select numero_conta from conta where id_usuario = ?");
-            resultado.next();
-            localizaConta.setString(1, resultado.getString("id"));
-            resultado = localizaConta.executeQuery();
+            localizaConta.setInt(1, id);
+            ResultSet resultado = localizaConta.executeQuery();
             resultado.next();
             conta = resultado.getString("numero_conta");
             conn.close();
@@ -258,21 +259,16 @@
         return conta;
     } 
 
-    public String numeroAgencia(String email){
+    public String numeroAgencia(int id){
         String agencia;
         try{
             Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-            PreparedStatement localizaUsuario = conn.prepareStatement("select id from Usuario where email = ?");
-            localizaUsuario.setString(1, email);
-            ResultSet resultado = localizaUsuario.executeQuery();
             PreparedStatement localizaAgencia = conn.prepareStatement("select agencia from conta where id_usuario = ?");
+            localizaAgencia.setInt(1, id);
+            ResultSet resultado = localizaAgencia.executeQuery();
             resultado.next();
-            localizaAgencia.setString(1, resultado.getString("id"));
-            resultado = localizaAgencia.executeQuery();
-            resultado.next();
-            
             agencia = resultado.getString("agencia");
-    conn.close();
+	    conn.close();
         }
         catch(Exception e){
             return e.toString();
