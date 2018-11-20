@@ -75,21 +75,21 @@
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="agOrigem">Agência de Origem</label>
-                  <input type="number" class="form-control" id="agOrigem" placeholder="<%= numeroAgencia(session.getAttribute("email").toString()) %>" value="<%= numeroAgencia(session.getAttribute("email").toString()) %>" readonly>
+                  <input type="text" class="form-control" id="agOrigem" placeholder="<%= numeroAgencia(session.getAttribute("email").toString()) %>" value="<%= numeroAgencia(session.getAttribute("email").toString()) %>" readonly>
                 </div>
                 <div class="form-group col-md-6">
                   <label for="ctOrigem">Conta de Origem</label>
-                  <input type="number" class="form-control" id="ctOrigem" placeholder="<%= numeroConta(session.getAttribute("email").toString()) %>" value="<%= numeroConta(session.getAttribute("email").toString()) %>" readonly>
+                  <input type="text" class="form-control" id="ctOrigem" placeholder="<%= numeroConta(session.getAttribute("email").toString()) %>" value="<%= numeroConta(session.getAttribute("email").toString()) %>" readonly>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group col-md-6">
                   <label for="agDestino">Agência de Destino</label>
-                  <input type="number" class="form-control" id="agDestino" placeholder="Agência" name="agenciaDestino">
+                  <input type="text" class="form-control" id="agDestino" placeholder="Agência" name="agenciaDestino">
                 </div>
                 <div class="form-group col-md-6">
                   <label for="ctDestino">Conta de Destino</label>
-                  <input type="number" class="form-control" id="ctDestino" placeholder="Conta" name="contaDeDestino" required><!--Ver número da conta-->
+                  <input type="text" class="form-control" id="ctDestino" placeholder="Conta" name="contaDeDestino" required><!--Ver número da conta-->
                 </div>
               </div>
               <label for="valor">Valor</label>
@@ -103,9 +103,16 @@
             String contaDestino = request.getParameter("contaDeDestino");
             String valorTransferencia = request.getParameter("valor");
 	    int idContaOrigem = idConta(numeroAgencia(session.getAttribute("email").toString()), numeroConta(session.getAttribute("email").toString()));
-            if( (contaDestino != null && agenciaDestino != null) && (valorTransferencia != null)){
+	    /*if (contaDestino != null && agenciaDestino != null){
+		if(agenciaDestino.equals(numeroAgencia(session.getAttribute("email").toString()))  && contaDestino.equals(numeroConta(session.getAttribute("email").toString()))){
+		    out.println("<div class=\"alert alert-danger\" role=\"alert\">Conta de destino e origem são as mesmas. Não é possível realizar a operação.</div>");
+		}
+	    }
+	    else */if( (contaDestino != null && agenciaDestino != null) && (valorTransferencia != null)){
+		//out.println("<script>alert(\" Agência de Destino: " + contaDestino + " - Agência Origem: " + numeroConta(session.getAttribute("email").toString())+ "\")</script>");
                 out.println(transferencia(session.getAttribute("email").toString(), agenciaDestino, contaDestino, valorTransferencia, idContaOrigem));
 	    }
+	    
           %>
           
           
@@ -132,11 +139,18 @@
     
     public String transferencia(String emailOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
         String contaIncorreta = "<div class=\"alert alert-danger\" role=\"alert\">Agência/Conta de destino não encontrada</div>";
-        String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Tansferência realizada com sucesso!</div>";
-        String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realizar sua transferência.</div>";
+        String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Operação realizada com sucesso!</div>";
+        String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Saldo insuficiente.</div>";
+	String contasIguais = "<div class=\"alert alert-danger\" role=\"alert\">Conta de destino e origem são as mesmas. Não é possível realizar a operação.</div>";
+	String resultadoException = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realiar sua operações. Por favor cheque o log de registro..</div>";
+	String agenciaOrigem  = numeroAgencia(emailOrigem);
+	String contaOrigem = numeroConta(emailOrigem);
 	Double valor = Double.parseDouble(vaalor);
 	int idDestino = idUsuarioConta(agenciaDestino, contaDestino);
-	if(idDestino > 0 && valor >= 0){
+	if(agenciaOrigem.contentEquals(agenciaDestino) && contaOrigem.contentEquals(contaDestino)){
+	    return contasIguais;
+	}
+	else if(idDestino > 0 && valor >= 0){
 	    try{
 		Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
 		PreparedStatement selectFundos = conn.prepareStatement("select saldo from usuario where email = ?");
@@ -151,8 +165,8 @@
 		    PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where email = ?");
 		    retiradaOrigem.setDouble(1, valor);
 		    retiradaOrigem.setString(2, emailOrigem);
-		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TEC - Banco XPTO - Agência: " + agenciaDestino + " - Conta: " + contaDestino + "'," + idConta(agenciaDestino, contaDestino) + ")");
-		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TEC - Banco XPTO - Responsável: " + emailOrigem + "', " + idContaOrigem + ")");
+		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + ", Conta: " + contaDestino + "'," + idConta(agenciaDestino, contaDestino) + ")");
+		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TBX de Agência: " + numeroAgencia(emailOrigem) + ", Conta: " + numeroConta(emailOrigem) + "', " + idContaOrigem + ")");
 		    regTransacaoDest.executeUpdate();
 		    regTransacaoOrg.executeUpdate();
 		    transferencia.executeUpdate();
@@ -163,7 +177,7 @@
 		conn.close();
 	    }
 	    catch(Exception e){
-		return e.toString();
+		return ("<script>console.log(\"" + e.toString() + "\")</script> \n" + resultadoException );
 	    }
 	    return resultadoPositivo;
 	}
