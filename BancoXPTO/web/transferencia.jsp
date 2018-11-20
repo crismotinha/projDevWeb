@@ -139,19 +139,27 @@
 	if(idDestino > 0 && valor >= 0){
 	    try{
 		Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-		PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo + ? where id = ?");
-		transferencia.setDouble(1, valor);
-		transferencia.setInt(2, idDestino);
-		PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where email = ?");
-		retiradaOrigem.setDouble(1, valor);
-		retiradaOrigem.setString(2, emailOrigem);
-		PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TEC - Banco XPTO - Agência: " + agenciaDestino + " - Conta: " + contaDestino + "'," + idConta(agenciaDestino, contaDestino) + ")");
-		PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TEC - Banco XPTO - Responsável: " + emailOrigem + "', " + idContaOrigem + ")");
-		regTransacaoDest.executeUpdate();
-		regTransacaoOrg.executeUpdate();
-		transferencia.executeUpdate();
-		retiradaOrigem.executeUpdate();
-		conn.commit();
+		PreparedStatement selectFundos = conn.prepareStatement("select saldo from usuario where email = ?");
+		selectFundos.setString(1, emailOrigem);
+		ResultSet rsFundos = selectFundos.executeQuery();
+		rsFundos.next();
+		Double fundos = rsFundos.getDouble("saldo");
+		if (fundos >= valor){
+		    PreparedStatement transferencia = conn.prepareStatement("update Usuario set saldo = saldo + ? where id = ?");
+		    transferencia.setDouble(1, valor);
+		    transferencia.setInt(2, idDestino);
+		    PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where email = ?");
+		    retiradaOrigem.setDouble(1, valor);
+		    retiradaOrigem.setString(2, emailOrigem);
+		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TEC - Banco XPTO - Agência: " + agenciaDestino + " - Conta: " + contaDestino + "'," + idConta(agenciaDestino, contaDestino) + ")");
+		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TEC - Banco XPTO - Responsável: " + emailOrigem + "', " + idContaOrigem + ")");
+		    regTransacaoDest.executeUpdate();
+		    regTransacaoOrg.executeUpdate();
+		    transferencia.executeUpdate();
+		    retiradaOrigem.executeUpdate();
+		    conn.commit();
+		}
+		else return resultadoNegativo;
 		conn.close();
 	    }
 	    catch(Exception e){
