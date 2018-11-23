@@ -7,7 +7,8 @@
 
 <%@page import="java.sql.*"%>
 <%@page import="java.time.LocalDate"%>
-<%@page import="java.time.Instant"%>
+<%@page import="java.time.ZoneDateTime"%>
+<%@page import="java.time.ZoneId"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html lang="en">
@@ -161,11 +162,11 @@
 		    PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where id = ?");
 		    retiradaOrigem.setDouble(1, valor);
 		    retiradaOrigem.setInt(2, idOrigem);
-		    String horaData = Instant.now().toString();
+		    String horaData = ZoneDateTime.now(ZoneId.of("America/Sao_Paulo")).toString();
 		    String data = horaData.substring(0, 9);
 		    String hora =  horaData.substring(11, 16);
-		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + " - Conta: " + contaDestino + "/ Data: " + data + " - Hora: " + hora + "'," + idConta(agenciaDestino, contaDestino) + ")");
-		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TBX de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "/ Data: " + data + " - Hora: " + hora + "', " + idContaOrigem + ")");
+		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + " - Conta: " + contaDestino + "/ Data: " + data + " - Hora: " + hora + "'," + idContaOrigem + ")");
+		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TBX de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "/ Data: " + data + " - Hora: " + hora + "', " + idConta(agenciaDestino, contaDestino) + ")");
 		    regTransacaoDest.executeUpdate();
 		    regTransacaoOrg.executeUpdate();
 		    transferencia.executeUpdate();
