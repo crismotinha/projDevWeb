@@ -82,7 +82,6 @@
           </div> <%
         };
     }
-
     if (login != null) { // o cara clicou em login
         try {
             Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
