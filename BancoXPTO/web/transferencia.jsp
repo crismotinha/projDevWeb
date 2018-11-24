@@ -13,6 +13,11 @@
 <%@page import="java.time.Instant"%>
 <%@page import="java.time.temporal.ChronoUnit"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<% Object user = session.getAttribute("id"); 
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+    }
+    else { %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -134,7 +139,7 @@
     </script>
   </body>
 </html>
-
+<%}%>
 <%!
     
     public String transferencia(int idOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
