@@ -5,10 +5,13 @@
 --%>
 
 
-<%@page import="java.sql.*"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.Connection"%>
+<%@page import="java.sql.DriverManager"%>
 <%@page import="java.time.LocalDate"%>
-<%@page import="java.time.ZoneDateTime"%>
-<%@page import="java.time.ZoneId"%>
+<%@page import="java.time.Instant"%>
+<%@page import="java.time.temporal.ChronoUnit"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!doctype html>
 <html lang="en">
@@ -162,7 +165,8 @@
 		    PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where id = ?");
 		    retiradaOrigem.setDouble(1, valor);
 		    retiradaOrigem.setInt(2, idOrigem);
-		    String horaData = ZoneDateTime.now(ZoneId.of("America/Sao_Paulo")).toString();
+		    Instant relogio = Instant.now();
+		    String horaData = relogio.minus(2, ChronoUnit.HOURS).toString();
 		    String data = horaData.substring(0, 9);
 		    String hora =  horaData.substring(11, 16);
 		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + " - Conta: " + contaDestino + "/ Data: " + data + " - Hora: " + hora + "'," + idContaOrigem + ")");
