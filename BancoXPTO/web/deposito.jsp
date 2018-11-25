@@ -126,46 +126,33 @@
 <%!
     
     public String deposito(int idOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
+        String valorInferior = "<div class=\"alert alert-danger\" role=\"alert\">Deposito de valor inferior a 1.</div>";
         String contaIncorreta = "<div class=\"alert alert-danger\" role=\"alert\">Agência/Conta de destino não encontrada</div>";
         String resultadoPositivo = "<div class=\"alert alert-success\" role=\"alert\">Operação realizada com sucesso!</div>";
-        String resultadoNegativo = "<div class=\"alert alert-danger\" role=\"alert\">Saldo insuficiente.</div>";
-//	String contasIguais = "<div class=\"alert alert-danger\" role=\"alert\">Conta de destino e origem são as mesmas. Não é possível realizar a operação.</div>";
-	String resultadoException = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realiar sua operações. Por favor cheque o log de registro..</div>";
+ 	String resultadoException = "<div class=\"alert alert-danger\" role=\"alert\">Algum erro ocorreu ao realiar sua operações. Por favor tente mais tarde ou entre em contato com sua agência</div>";
 	String agenciaOrigem  = numeroAgencia(idOrigem);
 	String contaOrigem = numeroConta(idOrigem);
 	Double valor = Double.parseDouble(vaalor);
 	int idDestino = idUsuarioConta(agenciaDestino, contaDestino);
-    //	if(agenciaOrigem.contentEquals(agenciaDestino) && contaOrigem.contentEquals(contaDestino)){
-//	    return contasIguais;
-//	}
-//	else if(idDestino > 0 && valor >= 0){
-        if(idDestino > 0 && valor >= 0){
+  
+        if(idDestino > 0 && valor >= 0){     //checar se o id da conta existe, para o depósito não ficar voando
 	    try{
 		Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
 		PreparedStatement selectFundos = conn.prepareStatement("select saldo from usuario where id = ?");
-	//	selectFundos.setInt(1, idOrigem);
-	//	ResultSet rsFundos = selectFundos.executeQuery();
-	//	rsFundos.next();
-	//	Double fundos = rsFundos.getDouble("saldo");
-		if (valor>0){
+		if (valor>0){                //garante depósito de valor posivo e maior que 0
 		    PreparedStatement deposito = conn.prepareStatement("update Usuario set saldo = saldo + ? where id = ?");
 		    deposito.setDouble(1, valor);
 		    deposito.setInt(2, idDestino);
-	//	    PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where id = ?");
-	//	    retiradaOrigem.setDouble(1, valor);
-	//	    retiradaOrigem.setInt(2, idOrigem);
 		    String horaData = Instant.now().toString();
-		    String data = horaData.substring(0, 9);
-		    String hora =  horaData.substring(11, 16);
-		 //   PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + " - Conta: " + contaDestino + "/ Data: " + data + " - Hora: " + hora + "'," + idConta(agenciaDestino, contaDestino) + ")");
+		    String data = horaData.substring(0, 10);
+                   // String temphoradata = java.time.Clock.systemDefaultZone().toString();
+                    String hora =  horaData.substring(11, 16);
 		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'DEP de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "/ Data: " + data + " - Hora: " + hora + "', " + idContaOrigem + ")");
 		    regTransacaoDest.executeUpdate();
-		 //   regTransacaoOrg.executeUpdate();
-		    deposito.executeUpdate();
-		 //   retiradaOrigem.executeUpdate();
+                    deposito.executeUpdate();
 		    conn.commit();
 		}
-		else return resultadoNegativo;
+		else return valorInferior;
 		conn.close();
 	    }
 	    catch(Exception e){
@@ -174,8 +161,8 @@
 	    return resultadoPositivo;
 	}
 	else if (idDestino == -1) return contaIncorreta;
-	//else if (idDestino == -1) return contaIncorreta;
-	else return resultadoNegativo; 
+
+	else return valorInferior; 
     }
 
     int idUsuarioConta(String agencia, String conta){
