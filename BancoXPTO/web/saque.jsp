@@ -58,7 +58,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" href="./transferencia.jsp">
                   <span data-feather="refresh-cw"></span>
                   Nova transferência
                 </a>

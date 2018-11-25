@@ -52,7 +52,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="./saque.jsp">
                   <span data-feather="file"></span>
                   Novo saque
                 </a>
@@ -64,7 +64,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="./deposito.jsp">
                   <span data-feather="users"></span>
                   Novo depósito
                 </a>
