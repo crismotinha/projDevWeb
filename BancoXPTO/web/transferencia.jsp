@@ -13,6 +13,11 @@
 <%@page import="java.time.Instant"%>
 <%@page import="java.time.temporal.ChronoUnit"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<% Object user = session.getAttribute("id"); 
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+    }
+    else { %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -29,7 +34,16 @@
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Banco XPTO</a>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
-          <a class="nav-link" href="#">Sign out</a>
+           <form name="logout" method="POST" action ="home.jsp">
+                <input type="submit" id="logout" value="Sign out" name="logout">
+            </form> 
+              <% String logout_form = request.getParameter("logout");
+                  if (request.getParameter("logout") != null) {
+                    HttpSession sessao = request.getSession(false);
+                    sessao.invalidate();
+                    response.sendRedirect("login.jsp");
+                }
+              %>
         </li>
       </ul>
     </nav>
@@ -136,7 +150,7 @@
     </script>
   </body>
 </html>
-
+<%}%>
 <%!
     
     public String transferencia(int idOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){

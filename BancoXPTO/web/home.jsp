@@ -40,6 +40,7 @@
       </ul>
     </nav>
 
+ 
     <div class="container-fluid">
       <div class="row">
           
@@ -47,13 +48,14 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="./home.jsp">
+                <a class="nav-link active" href="home.jsp">
                   <span data-feather="home"></span>
                   Home 
                   <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
+<<<<<<< HEAD
                 <a class="nav-link" href="saldoExtrato.jsp">
                   <span data-feather="activity"></span>
                   Saldo e Extrato
@@ -63,18 +65,35 @@
                 <a class="nav-link" href="novoSaque.jsp">
                   <span data-feather="file"></span>
                   Novo saque
+=======
+                <a class="nav-link" href="#">
+                  <span data-feather="activity"></span>
+                  Saldo e Extrato
+>>>>>>> master
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="arrow-up-circle"></span>
+                  Novo depósito
+                </a>
+              </li>
+              <li class="nav-item">
+<<<<<<< HEAD
+                <a class="nav-link" href="novoDeposito.jsp">
+                  <span data-feather="users"></span>
+                  Novo depósito
+=======
+                <a class="nav-link" href="#">
+                  <span data-feather="arrow-down-circle"></span>
+                  Novo saque
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="transferencia.jsp">
-                  <span data-feather="shopping-cart"></span>
+                  <span data-feather="refresh-cw"></span>
                   Nova transferência
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="novoDeposito.jsp">
-                  <span data-feather="users"></span>
-                  Novo depósito
+>>>>>>> master
                 </a>
               </li>
             </ul>
