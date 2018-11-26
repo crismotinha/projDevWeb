@@ -60,25 +60,25 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="saldoExtrato.jsp">
                   <span data-feather="activity"></span>
                   Saldo e Extrato
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="deposito.jsp">
                   <span data-feather="arrow-up-circle"></span>
                   Novo depósito
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="saque.jsp">
                   <span data-feather="arrow-down-circle"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" href="transferencia.jsp">
                   <span data-feather="refresh-cw"></span>
                   Nova transferência
                 </a>
