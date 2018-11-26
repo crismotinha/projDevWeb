@@ -5,6 +5,11 @@
 <%@page import="java.sql.Connection"%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%  Object isUserLogged = session.getAttribute("id"); 
+    if (isUserLogged != null) {
+        response.sendRedirect("home.jsp");
+    }
+    else { %>
 <!DOCTYPE html>
 <!DOCTYPE html>
 <html>
@@ -136,3 +141,5 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 </body>
 </html>
+<%} // fecha if lá de cima da sessão
+%> 
