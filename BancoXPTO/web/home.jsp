@@ -40,33 +40,40 @@
       </ul>
     </nav>
 
+ 
     <div class="container-fluid">
       <div class="row">
         <nav class="col-md-2 d-none d-md-block bg-light sidebar">
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="./home.jsp">
+                <a class="nav-link active" href="home.jsp">
                   <span data-feather="home"></span>
                   Home <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
-                  <span data-feather="file"></span>
+                  <span data-feather="activity"></span>
+                  Saldo e Extrato
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="arrow-up-circle"></span>
+                  Novo depósito
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="arrow-down-circle"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="transferencia.jsp">
-                  <span data-feather="shopping-cart"></span>
+                  <span data-feather="refresh-cw"></span>
                   Nova transferência
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="users"></span>
-                  Novo depósito
                 </a>
               </li>
             </ul>
