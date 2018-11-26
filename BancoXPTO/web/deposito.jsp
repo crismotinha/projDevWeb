@@ -1,9 +1,12 @@
-<%@page import="java.sql.*"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.Connection"%>
 <%@page import="java.time.LocalDate"%>
 <%@page import="java.time.Instant"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<% Object user = session.getAttribute("id"); 
-    if (user == null) {
+<% Object logado = session.getAttribute("id"); 
+    if (logado == null) {
         response.sendRedirect("login.jsp");
     }
     else { %>
@@ -100,7 +103,18 @@
             <button type="submit" class="btn btn-primary" >Depósito em Conta</button>
           </form>
           <br>
-
+        <%
+            String agenciaDestino = numeroAgencia(Integer.parseInt(session.getAttribute("id").toString()));
+            String contaDestino = numeroConta(Integer.parseInt(session.getAttribute("id").toString()));
+            String valorTransferencia = request.getParameter("valor");
+	    int idContaOrigem = idConta(numeroAgencia(Integer.parseInt(session.getAttribute("id").toString())), numeroConta(Integer.parseInt(session.getAttribute("id").toString())));
+	    if( (contaDestino != null && agenciaDestino != null) && (valorTransferencia != null)){
+                out.println(deposito(Integer.parseInt(session.getAttribute("id").toString()), agenciaDestino, contaDestino, valorTransferencia, idContaOrigem));
+                }
+	    
+          %>
+          
+          
         </main>
       </div>
     </div>
@@ -120,8 +134,7 @@
     
   </body>
 </html>
-<% } // fecha o verificador de sessão lá em cima
-%>
+<% } %>
 <%!
     
     public String deposito(int idOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
@@ -144,7 +157,6 @@
 		    deposito.setInt(2, idDestino);
 		    String horaData = Instant.now().toString();
 		    String data = horaData.substring(0, 10);
-                   // String temphoradata = java.time.Clock.systemDefaultZone().toString();
                     String hora =  horaData.substring(11, 16);
 		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'DEP de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "/ Data: " + data + " - Hora: " + hora + "', " + idContaOrigem + ")");
 		    regTransacaoDest.executeUpdate();
@@ -236,4 +248,3 @@
         return agencia;
     }
 %>
-
