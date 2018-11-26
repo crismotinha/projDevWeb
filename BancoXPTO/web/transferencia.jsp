@@ -50,37 +50,39 @@
 
     <div class="container-fluid">
       <div class="row">
+          
         <nav class="col-md-2 d-none d-md-block bg-light sidebar">
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="home.jsp">
+                <a class="nav-link" href="./home.jsp">
                   <span data-feather="home"></span>
-                  Home <span class="sr-only">(current)</span>
+                  Home 
+                  <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="saldoExtrato.jsp">
                   <span data-feather="activity"></span>
                   Saldo e Extrato
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="arrow-up-circle"></span>
-                  Novo depósito
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="arrow-down-circle"></span>
+                <a class="nav-link" href="novoSaque.jsp">
+                  <span data-feather="file"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="#">
-                  <span data-feather="refresh-cw"></span>
+                <a class="nav-link active" href="transferencia.jsp">
+                  <span data-feather="shopping-cart"></span>
                   Nova transferência
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="novoDeposito.jsp">
+                  <span data-feather="users"></span>
+                  Novo depósito
                 </a>
               </li>
             </ul>
