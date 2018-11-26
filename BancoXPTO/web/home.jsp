@@ -1,9 +1,3 @@
-<%-- 
-    Document   : home.jsp
-    Created on : Nov 15, 2018, 9:12:22 PM
-    Author     : let
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <% Object user = session.getAttribute("id"); 
     if (user == null) {

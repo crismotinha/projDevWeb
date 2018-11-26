@@ -1,13 +1,12 @@
-<%-- 
-    Document   : saque
-    Created on : 23/11/2018, 04:10:09
-    Author     : Geison Ferreira 
-    arquivo recuvea - dp 
---%>
 <%@page import="java.sql.*"%>
 <%@page import="java.time.LocalDate"%>
 <%@page import="java.time.Instant"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<% Object user = session.getAttribute("id"); 
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+    }
+    else { %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -25,7 +24,16 @@
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Banco XPTO</a>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
-          <a class="nav-link" href="./login.jsp">Sign out</a>
+           <form name="logout" method="POST" action ="home.jsp">
+                <input type="submit" id="logout" value="Sign out" name="logout">
+            </form> 
+              <% String logout_form = request.getParameter("logout");
+                  if (request.getParameter("logout") != null) {
+                    HttpSession sessao = request.getSession(false);
+                    sessao.invalidate();
+                    response.sendRedirect("login.jsp");
+                }
+              %>
         </li>
       </ul>
     </nav>
@@ -42,25 +50,25 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./saldoExtrato">
+                <a class="nav-link" href="saldoExtrato.jsp">
                   <span data-feather="activity"></span>
                   Saldo e Extrato
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./deposito.jsp">
+                <a class="nav-link" href="deposito.jsp">
                   <span data-feather="arrow-up-circle"></span>
                   Novo depósito
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="./saque.jsp">
+                <a class="nav-link active" href="saque.jsp">
                   <span data-feather="arrow-down-circle"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./transferencia.jsp">
+                <a class="nav-link" href="transferencia.jsp">
                   <span data-feather="refresh-cw"></span>
                   Nova transferência
                 </a>
@@ -121,7 +129,8 @@
     
   </body>
 </html>
-
+<%} // fecha a session lá de cima
+%>
 <%!
     
     public String saque(int idOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
@@ -205,25 +214,6 @@
 	}
 	return contaEncontrada;
     }
-
-    
-
-   /* public Double getSaldoOrigem(String email){
-        Double saldo = 0.0;
-        try{
-            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-            PreparedStatement localizaUsuario = conn.prepareStatement("select saldo from Usuario where email = ?");
-            localizaUsuario.setString(1, email);
-            ResultSet resultado = localizaUsuario.executeQuery();
-            resultado.next();
-            saldo = resultado.getDouble("saldo");
-            conn.close();
-        }
-        catch(Exception e){
-            return saldo;
-        }
-        return saldo;
-    }*/
 
     public String numeroConta(int id){
         String conta;

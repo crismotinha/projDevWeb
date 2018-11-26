@@ -1,10 +1,3 @@
-<%-- 
-    Document   : transferencia
-    Created on : 16/11/2018, 14:51:40
-    Author     : Thales
---%>
-
-
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.Connection"%>
@@ -241,25 +234,6 @@
 	}
 	return contaEncontrada;
     }
-
-    
-
-   /* public Double getSaldoOrigem(String email){
-        Double saldo = 0.0;
-        try{
-            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-            PreparedStatement localizaUsuario = conn.prepareStatement("select saldo from Usuario where email = ?");
-            localizaUsuario.setString(1, email);
-            ResultSet resultado = localizaUsuario.executeQuery();
-            resultado.next();
-            saldo = resultado.getDouble("saldo");
-            conn.close();
-        }
-        catch(Exception e){
-            return saldo;
-        }
-        return saldo;
-    }*/
 
     public String numeroConta(int id){
         String conta;
