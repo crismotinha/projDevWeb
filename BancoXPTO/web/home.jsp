@@ -55,45 +55,27 @@
                 </a>
               </li>
               <li class="nav-item">
-<<<<<<< HEAD
                 <a class="nav-link" href="saldoExtrato.jsp">
                   <span data-feather="activity"></span>
                   Saldo e Extrato
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="novoSaque.jsp">
+                <a class="nav-link" href="saque.jsp">
                   <span data-feather="file"></span>
-                  Novo saque
-=======
-                <a class="nav-link" href="#">
-                  <span data-feather="activity"></span>
-                  Saldo e Extrato
->>>>>>> master
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                  <span data-feather="arrow-up-circle"></span>
-                  Novo depósito
-                </a>
-              </li>
-              <li class="nav-item">
-<<<<<<< HEAD
-                <a class="nav-link" href="novoDeposito.jsp">
-                  <span data-feather="users"></span>
-                  Novo depósito
-=======
-                <a class="nav-link" href="#">
-                  <span data-feather="arrow-down-circle"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="transferencia.jsp">
-                  <span data-feather="refresh-cw"></span>
+                  <span data-feather="shopping-cart"></span>
                   Nova transferência
->>>>>>> master
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="deposito.jsp">
+                  <span data-feather="users"></span>
+                  Novo depósito
                 </a>
               </li>
             </ul>
