@@ -85,6 +85,7 @@
                 <div class="card-body">
                   <h5 class="card-title">Saldo</h5>
                   <p class="card-text">
+                      Seu saldo atual é R$
                       <%
                           try {
                             Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
@@ -103,7 +104,7 @@
                               
                               if(resultado.next()){
                                 double saldoAtual = Double.parseDouble(resultado.getString("saldo"));
-                                out.println(saldoAtual);
+                                out.println("<b>" + saldoAtual + "</b>");
                               }
                               
                           } catch (Exception e){
@@ -148,7 +149,7 @@
                                                    daí se não houver data ele não dá erro 
                                                    (é temporário, só para os testes)*/
                                                 if(texto.indexOf("-") != -1){
-                                                    out.println(texto.substring(texto.indexOf("-")+1,texto.length()-1));
+                                                    out.println(texto.substring(texto.indexOf("-")+1,texto.length()));
                                                 } else {
                                                     out.println("");    
                                                 }
