@@ -1,3 +1,5 @@
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.Connection"%>
@@ -173,12 +175,20 @@
 		    PreparedStatement retiradaOrigem = conn.prepareStatement("update usuario set saldo = saldo - ? where id = ?");
 		    retiradaOrigem.setDouble(1, valor);
 		    retiradaOrigem.setInt(2, idOrigem);
+
+                    /*
 		    Instant relogio = Instant.now();
 		    String horaData = relogio.minus(2, ChronoUnit.HOURS).toString();
 		    String data = horaData.substring(0, 9);
 		    String hora =  horaData.substring(11, 16);
-		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + " - Conta: " + contaDestino + "/ Data: " + data + " - Hora: " + hora + "'," + idContaOrigem + ")");
-		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TBX de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "/ Data: " + data + " - Hora: " + hora + "', " + idConta(agenciaDestino, contaDestino) + ")");
+                    */
+
+                    /* Obtendo data e hora */
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+                    Date date = new Date();
+
+		    PreparedStatement regTransacaoOrg = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( -" + valor + ", 'TBX para Agência: " + agenciaDestino + " - Conta: " + contaDestino + "|" +formatter.format(date)+ "'," + idContaOrigem + ")");
+		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'TBX de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "|" +formatter.format(date)+ "', " + idConta(agenciaDestino, contaDestino) + ")");
 		    regTransacaoDest.executeUpdate();
 		    regTransacaoOrg.executeUpdate();
 		    transferencia.executeUpdate();

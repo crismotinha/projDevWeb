@@ -1,3 +1,5 @@
+<%@page import="java.util.Date"%>
+<%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.DriverManager"%>
@@ -155,10 +157,18 @@
 		    PreparedStatement deposito = conn.prepareStatement("update Usuario set saldo = saldo + ? where id = ?");
 		    deposito.setDouble(1, valor);
 		    deposito.setInt(2, idDestino);
+
+                    /*
 		    String horaData = Instant.now().toString();
 		    String data = horaData.substring(0, 10);
                     String hora =  horaData.substring(11, 16);
-		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'DEP de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "/ Data: " + data + " - Hora: " + hora + "', " + idContaOrigem + ")");
+                    */
+
+                    /* Obtendo data e hora */
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  
+                    Date date = new Date();
+
+		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'DEP de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "|" +formatter.format(date)+ "', " + idContaOrigem + ")");
 		    regTransacaoDest.executeUpdate();
                     deposito.executeUpdate();
 		    conn.commit();
