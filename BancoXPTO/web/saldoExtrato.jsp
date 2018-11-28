@@ -1,14 +1,13 @@
-<%-- 
-    Document   : saldoExtrato
-    Created on : 15/11/2018, 19:23:03
-    Author     : DanielDiniz
---%>
-
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.DriverManager"%>
 <%@page import="java.sql.Connection"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<% Object user = session.getAttribute("id"); 
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+    }
+    else { %>
 <!DOCTYPE html>
 <html>
     <head>
@@ -24,7 +23,16 @@
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Banco XPTO</a>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
-          <a class="nav-link" href="#">Sign out</a>
+           <form name="logout" method="POST" action ="home.jsp">
+                <input type="submit" id="logout" value="Sign out" name="logout">
+            </form> 
+              <% String logout_form = request.getParameter("logout");
+                  if (request.getParameter("logout") != null) {
+                    HttpSession sessao = request.getSession(false);
+                    sessao.invalidate();
+                    response.sendRedirect("login.jsp");
+                }
+              %>
         </li>
       </ul>
     </nav>
@@ -32,14 +40,13 @@
     <div class="container-fluid">
       <div class="row">
           
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+         <nav class="col-md-2 d-none d-md-block bg-light sidebar">
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="./home.jsp">
+                <a class="nav-link" href="home.jsp">
                   <span data-feather="home"></span>
-                  Home 
-                  <span class="sr-only">(current)</span>
+                  Home <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
@@ -49,21 +56,21 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="novoSaque.jsp">
-                  <span data-feather="file"></span>
+                <a class="nav-link" href="deposito.jsp">
+                  <span data-feather="arrow-up-circle"></span>
+                  Novo depósito
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="saque.jsp">
+                  <span data-feather="arrow-down-circle"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="transferencia.jsp">
-                  <span data-feather="shopping-cart"></span>
+                  <span data-feather="refresh-cw"></span>
                   Nova transferência
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="novoDeposito.jsp">
-                  <span data-feather="users"></span>
-                  Novo depósito
                 </a>
               </li>
             </ul>
@@ -78,6 +85,7 @@
                 <div class="card-body">
                   <h5 class="card-title">Saldo</h5>
                   <p class="card-text">
+                      Seu saldo atual é R$
                       <%
                           try {
                             Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO",
@@ -96,7 +104,7 @@
                               
                               if(resultado.next()){
                                 double saldoAtual = Double.parseDouble(resultado.getString("saldo"));
-                                out.println(saldoAtual);
+                                out.println("<b>" + saldoAtual + "</b>");
                               }
                               
                           } catch (Exception e){
@@ -141,7 +149,7 @@
                                                    daí se não houver data ele não dá erro 
                                                    (é temporário, só para os testes)*/
                                                 if(texto.indexOf("-") != -1){
-                                                    out.println(texto.substring(texto.indexOf("-")+1,texto.length()-1));
+                                                    out.println(texto.substring(texto.indexOf("-")+1,texto.length()));
                                                 } else {
                                                     out.println("");    
                                                 }
@@ -193,3 +201,5 @@
     </script>
     </body>
 </html>
+<%} // fecha a session
+%>

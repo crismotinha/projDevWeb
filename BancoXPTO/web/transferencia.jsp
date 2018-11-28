@@ -1,10 +1,3 @@
-<%-- 
-    Document   : transferencia
-    Created on : 16/11/2018, 14:51:40
-    Author     : Thales
---%>
-
-
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.sql.PreparedStatement"%>
 <%@page import="java.sql.Connection"%>
@@ -55,10 +48,9 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="./home.jsp">
+                <a class="nav-link" href="home.jsp">
                   <span data-feather="home"></span>
-                  Home 
-                  <span class="sr-only">(current)</span>
+                  Home <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
@@ -68,21 +60,21 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="novoSaque.jsp">
-                  <span data-feather="file"></span>
+                <a class="nav-link" href="deposito.jsp">
+                  <span data-feather="arrow-up-circle"></span>
+                  Novo depósito
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="saque.jsp">
+                  <span data-feather="arrow-down-circle"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link active" href="transferencia.jsp">
-                  <span data-feather="shopping-cart"></span>
+                  <span data-feather="refresh-cw"></span>
                   Nova transferência
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="novoDeposito.jsp">
-                  <span data-feather="users"></span>
-                  Novo depósito
                 </a>
               </li>
             </ul>
@@ -243,25 +235,6 @@
 	}
 	return contaEncontrada;
     }
-
-    
-
-   /* public Double getSaldoOrigem(String email){
-        Double saldo = 0.0;
-        try{
-            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-            PreparedStatement localizaUsuario = conn.prepareStatement("select saldo from Usuario where email = ?");
-            localizaUsuario.setString(1, email);
-            ResultSet resultado = localizaUsuario.executeQuery();
-            resultado.next();
-            saldo = resultado.getDouble("saldo");
-            conn.close();
-        }
-        catch(Exception e){
-            return saldo;
-        }
-        return saldo;
-    }*/
 
     public String numeroConta(int id){
         String conta;

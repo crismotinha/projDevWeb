@@ -1,9 +1,3 @@
-<%-- 
-    Document   : home.jsp
-    Created on : Nov 15, 2018, 9:12:22 PM
-    Author     : let
---%>
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <% Object user = session.getAttribute("id"); 
     if (user == null) {
@@ -50,8 +44,7 @@
               <li class="nav-item">
                 <a class="nav-link active" href="home.jsp">
                   <span data-feather="home"></span>
-                  Home 
-                  <span class="sr-only">(current)</span>
+                  Home <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
@@ -61,21 +54,21 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="deposito.jsp">
+                  <span data-feather="arrow-up-circle"></span>
+                  Novo depósito
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="saque.jsp">
-                  <span data-feather="file"></span>
+                  <span data-feather="arrow-down-circle"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="transferencia.jsp">
-                  <span data-feather="shopping-cart"></span>
+                  <span data-feather="refresh-cw"></span>
                   Nova transferência
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="deposito.jsp">
-                  <span data-feather="users"></span>
-                  Novo depósito
                 </a>
               </li>
             </ul>

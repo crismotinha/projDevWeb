@@ -1,12 +1,15 @@
-<%-- 
-    Document   : novoDeposito
-    Created on : 21/11/2018, 02:23:00
-    Author     : Geison Ferreira
---%>
-<%@page import="java.sql.*"%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.sql.PreparedStatement"%>
+<%@page import="java.sql.DriverManager"%>
+<%@page import="java.sql.Connection"%>
 <%@page import="java.time.LocalDate"%>
 <%@page import="java.time.Instant"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<% Object logado = session.getAttribute("id"); 
+    if (logado == null) {
+        response.sendRedirect("login.jsp");
+    }
+    else { %>
 <!doctype html>
 <html lang="en">
   <head>
@@ -23,7 +26,16 @@
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">Banco XPTO</a>
       <ul class="navbar-nav px-3">
         <li class="nav-item text-nowrap">
-          <a class="nav-link" href="./login.jsp">Sign out</a>
+           <form name="logout" method="POST" action ="home.jsp">
+                <input type="submit" id="logout" value="Sign out" name="logout">
+            </form> 
+              <% String logout_form = request.getParameter("logout");
+                  if (request.getParameter("logout") != null) {
+                    HttpSession sessao = request.getSession(false);
+                    sessao.invalidate();
+                    response.sendRedirect("login.jsp");
+                }
+              %>
         </li>
       </ul>
     </nav>
@@ -40,25 +52,25 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./saldoExtrato.jsp">
+                <a class="nav-link" href="saldoExtrato.jsp">
                   <span data-feather="activity"></span>
                   Saldo e Extrato
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link active" href="./deposito.jsp">
+                <a class="nav-link active" href="deposito.jsp">
                   <span data-feather="arrow-up-circle"></span>
                   Novo depósito
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./saque.jsp">
+                <a class="nav-link" href="saque.jsp">
                   <span data-feather="arrow-down-circle"></span>
                   Novo saque
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="./transferencia">
+                <a class="nav-link" href="transferencia.jsp">
                   <span data-feather="refresh-cw"></span>
                   Nova transferência
                 </a>
@@ -122,7 +134,7 @@
     
   </body>
 </html>
-
+<% } %>
 <%!
     
     public String deposito(int idOrigem, String agenciaDestino, String contaDestino, String vaalor, int idContaOrigem){
@@ -145,7 +157,6 @@
 		    deposito.setInt(2, idDestino);
 		    String horaData = Instant.now().toString();
 		    String data = horaData.substring(0, 10);
-                   // String temphoradata = java.time.Clock.systemDefaultZone().toString();
                     String hora =  horaData.substring(11, 16);
 		    PreparedStatement regTransacaoDest = conn.prepareStatement("insert into transacao (valor, descricao, id_conta) values ( " + valor + ", 'DEP de Agência: " + numeroAgencia(idOrigem) + " - Conta: " + numeroConta(idOrigem) + "/ Data: " + data + " - Hora: " + hora + "', " + idContaOrigem + ")");
 		    regTransacaoDest.executeUpdate();
@@ -203,25 +214,6 @@
 	return contaEncontrada;
     }
 
-    
-
-   /* public Double getSaldoOrigem(String email){
-        Double saldo = 0.0;
-        try{
-            Connection conn = DriverManager.getConnection("jdbc:derby://localhost:1527/BancoXPTO", "adm", "123456");
-            PreparedStatement localizaUsuario = conn.prepareStatement("select saldo from Usuario where email = ?");
-            localizaUsuario.setString(1, email);
-            ResultSet resultado = localizaUsuario.executeQuery();
-            resultado.next();
-            saldo = resultado.getDouble("saldo");
-            conn.close();
-        }
-        catch(Exception e){
-            return saldo;
-        }
-        return saldo;
-    }*/
-
     public String numeroConta(int id){
         String conta;
         try{
@@ -256,4 +248,3 @@
         return agencia;
     }
 %>
-
